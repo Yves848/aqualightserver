@@ -4,7 +4,7 @@ import express, { NextFunction, Request, Response } from "npm:express@4.18.2";
 const app = express();
 const port = Number(Deno.env.get("PORT")) || 3000;
 
-const reqLogger = function (req, _res, next) {
+const reqLogger = function (req : Request, _res : Response, next : NextFunction) {
   console.info(`${req.method} request to "${req.url}" by ${req.hostname}`);
   next();
 };
@@ -12,7 +12,7 @@ const reqLogger = function (req, _res, next) {
 app.use(reqLogger);
 app.use(express.json());
 
-app.get("/", (_req, res) => {
+app.get("/", (_req : Request, res : Response) => {
   res.status(200).send("Hello from Deno and Express!");
 });
 
