@@ -20,8 +20,8 @@ app.post("/log/add",(_req : Request,res : Response) => {
   // console.log(_req.params.log);
   console.log(_req.body);
   res.status(200).send("Log written");
-
 });
+
 
 app.listen(port, () => {
   console.log(`Listening on ${port} ...`);
