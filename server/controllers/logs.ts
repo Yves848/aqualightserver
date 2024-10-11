@@ -2,7 +2,7 @@ import Logs from '../models/logs.ts';
 import {Request,Response} from 'npm:express';
 
 const createLog= async (req : Request ,res: Response) => {
-  
+  console.log(req.body);
   const log = new Logs({
     date: req.body.date,
     time: req.body.time,
