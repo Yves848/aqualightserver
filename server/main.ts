@@ -2,6 +2,8 @@
 import express, { NextFunction, Request, Response } from "npm:express@^4.18.2";
 import "./config/db.ts";
 import user from "./routes/users.ts";
+import sunrise from "./routes/surise.ts";
+import logs from "./routes/logs.ts";
 
 const app = express();
 const port = Number(Deno.env.get("PORT")) || 3000;
@@ -14,17 +16,8 @@ const reqLogger = function (req : Request, _res : Response, next : NextFunction)
 app.use(reqLogger);
 app.use(express.json());
 app.use("/user", user);
-
-// app.get("/", (_req : Request, res : Response) => {
-//   res.status(200).send("Hello from Deno and Express!");
-// });
-
-// app.post("/log/add",(_req : Request,res : Response) => {
-//   // console.log(_req.params.log);
-//   console.log(_req.body);
-//   res.status(200).send("Log written");
-// });
-
+app.use("/sunrise",sunrise);
+app.use("/logs",logs);
 
 app.listen(port, () => {
   console.log(`Listening on ${port} ...`);
