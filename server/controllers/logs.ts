@@ -11,8 +11,9 @@ const createLog = async (req: Request, res: Response) => {
   try {
     const savedLog = await log.save();
     res.status(201).json(savedLog);
-  } catch (_error) {
-    res.status(400).json({ message: _error.message });
+  } catch (_error : unknown) {
+    const { message } = _error as Error;
+    res.status(400).json({ "message": message });
   }
 };
 

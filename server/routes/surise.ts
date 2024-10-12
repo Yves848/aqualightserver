@@ -8,8 +8,9 @@ router.get("/", async (req: Request, res: Response) => {
   try {
     const sunrise = await getSurise();
     res.json(sunrise);
-  } catch (error) {
-    res.json({ message: error.message });
+  } catch (error : unknown) {
+    const { message } = error as Error;
+    res.json({ "message": message });
   }
 }
 );

@@ -5,8 +5,9 @@ const getUser= async (req : Request ,res: Response) => {
  try {
     const user = await User.findById(req.params.id);
     res.json(user);
- } catch (error) {
-  res.json({message: error.message});
+ } catch (error : unknown) {
+  const { message } = error as Error;
+  res.json({"message": message});
  } 
 }
 
@@ -14,8 +15,9 @@ const getUsers = async(_req : Request ,res: Response) => {
   try {
     const users = await User.find();
     res.json(users);
-    } catch (error) {
-      res.json({message: error.message});
+    } catch (error : unknown) {
+      const { message } = error as Error;
+      res.json({"message": message});
     }
 };
 
@@ -29,8 +31,9 @@ const createUser= async (req : Request ,res: Response) => {
   try {
     const savedUser = await user.save();
     res.status(201).json(savedUser);
-  } catch (_error) {
-    res.status(400).json({message: _error.message});
+  } catch (_error : unknown) {
+    const { message } = _error as Error;
+    res.status(400).json({"message": message});
   }
 };
 
@@ -43,8 +46,9 @@ const updateUser = async (req : Request ,res: Response) => {
     if (req.body.password != null) user.password = req.body.password;
     const updatedUser = await user.save();
     res.json(updatedUser);
-  } catch (error) {
-    res.status(500).json({message: error.message});
+  } catch (error : unknown) {
+    const { message } = error as Error;
+    res.status(500).json({"message": message});
   }
 }
 
@@ -54,8 +58,9 @@ const deleteUser = async (req : Request ,res: Response) => {
     if (!user) return res.status(404).json({message: 'User not found'});
     await user.deleteOne();
     res.json({message: 'User deleted'});
-  } catch (error) {
-    res.status(500).json({message: error.message});
+  } catch (error : unknown) {
+    const { message } = error as Error;
+    res.status(500).json({"message": message});
   }
 }
 
