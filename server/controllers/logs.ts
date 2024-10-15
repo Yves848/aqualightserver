@@ -3,7 +3,10 @@ import { Request, Response } from 'npm:express';
 
 const createLog = async (req: Request, res: Response) => {
   console.log(req.body);
+  const date = new Date();
+  const dateStr = `${date.getUTCFullYear()}-${date.getUTCMonth() + 1}-${date.getUTCDate()}`;
   const log = new Logs({
+    timestamp : dateStr,
     date: req.body.date,
     time: req.body.time,
     status: req.body.status,
