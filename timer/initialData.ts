@@ -9,8 +9,20 @@ const planningSchema = new mongoose.Schema({
   modeeclairage: { type: Number, required: true }
 });
 
+const planning : entreePlanning[] =[];
 for (const day in Dow) {
   if (typeof (Dow[day]) !== "string") {
-    console.log(Dow[day]);
+    planning.push({
+      joursemaine: Dow[day],
+      heure: "08:00:00",
+      modeeclairage: ModeEclairage.Jour
+    });
+    planning.push({
+      joursemaine: Dow[day],
+      heure: "17:00:00",
+      modeeclairage: ModeEclairage.Nuit
+    });
   }
 }
+
+console.log(planning);
