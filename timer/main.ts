@@ -4,13 +4,14 @@ class Scheduler {
   private currentDay : number;
 
   constructor() {
-    this.currentDay = Dow.Dimanche;
+    this.currentDay = -1;
   }
 
 
   watchDayChange() {
     setInterval(async () => {
       const today = new Date();
+      console.log('Check if day changed');
       if (today.getDay() !== this.currentDay) {
         console.log(`Day changed! ${Dow[today.getDay()]} Reloading tasks...`);
         this.currentDay = today.getDay();
