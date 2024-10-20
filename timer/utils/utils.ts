@@ -26,5 +26,31 @@ const setAqualightData = async (data: lights) => {
     console.log("data", data);
   }
 }
+const setAqualightDay = async () => {
+  const response = await fetch(`${env.AQUALIGHT_URL}/day`,{
+    method: "POST",
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);;
+  } else {
+    console.log("Switch to day mode");
+  }
+}
+const setAqualightNight = async () => {
+  const response = await fetch(`${env.AQUALIGHT_URL}/night`,{
+    method: "POST",
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);;
+  } else {
+    console.log("Switch to night mode");
+  }
+}
 
-export {getAquaLightData, setAqualightData};
+export {getAquaLightData, setAqualightData,setAqualightDay,setAqualightNight};

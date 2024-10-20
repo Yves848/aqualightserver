@@ -1,15 +1,18 @@
 import { Dow } from "./consts.ts";
 import "./config/db.ts";
 import { getPlanning } from "./controllers/plannings.ts";
-import {getAquaLightData, setAqualightData} from "./utils/utils.ts";
+import { getAquaLightData, setAqualightData, setAqualightDay, setAqualightNight } from "./utils/utils.ts";
 import type { lights } from "./interfaces/planning.ts";
+import type { aqualightData } from "./interfaces/planning.ts";
 
 
 class Scheduler {
   private currentDay: number;
   private start: boolean = true;
-  private dayTime? : Date;
-  private nightTime? : Date;
+  private dayTime: Date = new Date();
+  private nightTime: Date = new Date();
+  private timer: number = -1;
+  private currentLightData: aqualightData = { day: "off", night: "off" };
 
   constructor() {
     const today = new Date();
@@ -17,39 +20,32 @@ class Scheduler {
   }
 
   async setAqualightData() {
-    const aqualightData = await getAquaLightData();
-    console.log('aqualightData', aqualightData);
+    this.currentLightData = await getAquaLightData();
+    // console.log('aqualightData', aqualightData);
     const now = new Date();
-    let data : lights;
     if (now >= this.dayTime && now < this.nightTime) {
-      data = {
-        mode: "day",
-        set: "on"
+      if (this.currentLightData.day === "off") {
+        await setAqualightDay();
+        this.currentLightData.day = "on";
+        this.currentLightData.night = "off";
+        console.log('aqualightData', this.currentLightData);
+        
       }
-      await setAqualightData(data);
-      data = {
-        mode: "night",
-        set: "off"
-      }
-      await setAqualightData(data);
     } else {
-      data = {
-        mode: "night",
-        set: "on"
+      if (this.currentLightData.night === "off") {
+        await setAqualightNight();
+        this.currentLightData.night = "on";
+        this.currentLightData.day = "off";
+        console.log('aqualightData', this.currentLightData);
       }
-      await setAqualightData(data);
-      data = {
-        mode: "day",
-        set: "off"
-      }
-      await setAqualightData(data);
     }
-    
+
   }
 
   async startScheduler(): Promise<void> {
     console.log('Start Scheduler');
     console.log(`Current day: ${Dow[this.currentDay]}`);
+    this.currentLightData = await getAquaLightData();
     await this.dayChangeHandler(this.currentDay);
   }
 
@@ -62,24 +58,30 @@ class Scheduler {
     // console.log(data);
     if (data) {
       let temp = data[0].heure.split(':');
-      let heure : number = parseInt(temp[0]);
-      let minutes : number = parseInt(temp[1]);
-      let secondes : number = parseInt(temp[2]);
+      let heure: number = parseInt(temp[0]);
+      let minutes: number = parseInt(temp[1]);
+      let secondes: number = parseInt(temp[2]);
       this.dayTime = new Date();
       this.dayTime.setHours(heure, minutes, secondes);
       this.nightTime = new Date();
       temp = data[1].heure.split(':');
       heure = parseInt(temp[0]);
-      minutes =parseInt(temp[1]);
-      secondes =parseInt(temp[2]);
+      minutes = parseInt(temp[1]);
+      secondes = parseInt(temp[2]);
       this.nightTime.setHours(heure, minutes, secondes);
       console.log(`${Dow[day]} tasks loaded.`);
       console.log(`${Dow[day]} time: ${this.dayTime?.toLocaleString()} - ${this.nightTime?.toLocaleString()}`);
-      await this.setAqualightData();
+      if (this.timer > -1) {
+        clearInterval(this.timer);
+      }
+      this.timer = setInterval(async () => {
+        await this.setAqualightData();
+      }, 5 * 1000);
     }
     this.start = false;
     return 0;
   }
+
   watchDayChange() {
     setInterval(async () => {
       const today = new Date();
@@ -87,7 +89,7 @@ class Scheduler {
       if (today.getDay() !== this.currentDay) {
         await this.dayChangeHandler(today.getDay())        // await this.loadTasksFromFile(filePath);
       }
-    }, 30 * 1000); // Check every 1 minute
+    }, 60 * 1000); // Check every 1 minute
   }
 
 
