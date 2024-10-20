@@ -5,3 +5,8 @@ export interface entreePlanning {
   heure : string,
   modeeclairage : ModeEclairage
 }
+
+export interface lights {
+  day : string,
+  night : string
+}

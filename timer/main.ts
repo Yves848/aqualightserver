@@ -4,7 +4,8 @@ class Scheduler {
   private currentDay : number;
 
   constructor() {
-    this.currentDay = -1;
+    const today = new Date();
+    this.currentDay = today.getDay();
   }
 
 
