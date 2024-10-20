@@ -4,6 +4,7 @@ import { getPlanning } from "./controllers/plannings.ts";
 import { getAquaLightData, setAqualightData, setAqualightDay, setAqualightNight } from "./utils/utils.ts";
 import type { lights } from "./interfaces/planning.ts";
 import type { aqualightData } from "./interfaces/planning.ts";
+import type { entreePlanning } from "./interfaces/planning.ts";
 
 
 class Scheduler {
@@ -54,7 +55,7 @@ class Scheduler {
       console.log(`Day changed! ${Dow[day]} Reloading tasks...`);
       this.currentDay = day;
     }
-    const data = await getPlanning(this.currentDay);
+    const data : entreePlanning[] = await getPlanning(this.currentDay);
     // console.log(data);
     if (data) {
       let temp = data[0].heure.split(':');

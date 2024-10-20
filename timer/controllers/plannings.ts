@@ -1,13 +1,13 @@
 import type { entreePlanning } from "../interfaces/planning.ts";
 import Planning from '../models/planning.ts';
 
-const getPlanning = async (day : number)  => {
+const getPlanning = async (day : number) : Promise<entreePlanning[]> => {
   try {
     const planning = await Planning.find({joursemaine : day});
     return planning;
   } catch (error: unknown) {
     const { message } = error as Error;
-    return message;
+    throw new Error(`Error fetching planning: ${message}`);
   }
 }
 
