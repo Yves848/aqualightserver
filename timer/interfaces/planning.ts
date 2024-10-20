@@ -7,8 +7,8 @@ export interface entreePlanning {
 }
 
 export interface lights {
-  day : string,
-  night : string
+  mode : string,
+  set : string
 }
 
 export interface aqualightData {

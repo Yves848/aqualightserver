@@ -1,7 +1,8 @@
 import { Dow } from "./consts.ts";
 import "./config/db.ts";
 import { getPlanning } from "./controllers/plannings.ts";
-import { Int32 } from "../../../AppData/Local/deno/npm/registry.npmjs.org/mongodb/6.9.0/mongodb.d.ts";
+import {getAquaLightData, setAqualightData} from "./utils/utils.ts";
+import type { lights } from "./interfaces/planning.ts";
 
 
 class Scheduler {
@@ -13,6 +14,37 @@ class Scheduler {
   constructor() {
     const today = new Date();
     this.currentDay = today.getDay();
+  }
+
+  async setAqualightData() {
+    const aqualightData = await getAquaLightData();
+    console.log('aqualightData', aqualightData);
+    const now = new Date();
+    let data : lights;
+    if (now >= this.dayTime && now < this.nightTime) {
+      data = {
+        mode: "day",
+        set: "on"
+      }
+      await setAqualightData(data);
+      data = {
+        mode: "night",
+        set: "off"
+      }
+      await setAqualightData(data);
+    } else {
+      data = {
+        mode: "night",
+        set: "on"
+      }
+      await setAqualightData(data);
+      data = {
+        mode: "day",
+        set: "off"
+      }
+      await setAqualightData(data);
+    }
+    
   }
 
   async startScheduler(): Promise<void> {
@@ -43,6 +75,7 @@ class Scheduler {
       this.nightTime.setHours(heure, minutes, secondes);
       console.log(`${Dow[day]} tasks loaded.`);
       console.log(`${Dow[day]} time: ${this.dayTime?.toLocaleString()} - ${this.nightTime?.toLocaleString()}`);
+      await this.setAqualightData();
     }
     this.start = false;
     return 0;

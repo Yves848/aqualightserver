@@ -7,7 +7,7 @@ const getPlanning = async (day : number)  => {
     return planning;
   } catch (error: unknown) {
     const { message } = error as Error;
-    return null;
+    return message;
   }
 }
 
