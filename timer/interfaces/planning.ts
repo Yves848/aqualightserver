@@ -10,3 +10,9 @@ export interface lights {
   day : string,
   night : string
 }
+
+export interface aqualightData {
+  day: string,
+  night : string,
+  temp? : string
+}
