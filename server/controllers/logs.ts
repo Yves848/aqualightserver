@@ -20,4 +20,26 @@ const createLog = async (req: Request, res: Response) => {
   }
 };
 
-export { createLog }
+const addLog = async (req: Request, res: Response) => {
+  console.log(req.body);
+  const date = new Date();
+  const dateStr = `${date.getUTCFullYear()}-${date.getUTCMonth() + 1}-${date.getUTCDate()}`;
+  const timeStr = `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
+  const log = new Logs({
+    timestamp : dateStr,
+    date: dateStr,
+    time: timeStr,
+    status: req.body.Content,
+  });
+  try {
+    const savedLog = await log.save();
+    res.status(201).json(savedLog);
+  } catch (_error : unknown) {
+    const { message } = _error as Error;
+    res.status(400).json({ "message": message });
+  }
+};
+
+
+
+export { createLog, addLog }
