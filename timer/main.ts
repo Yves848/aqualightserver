@@ -22,7 +22,7 @@ class Scheduler {
 
   async getAqualightDataHandler() {
     // console.log("getAqualightData called");
-    const currentLightData: aqualightData = { day: "off", night: "off" };
+    const currentLightData =  this.currentLightData;
     try {
       this.currentLightData = await getAquaLightData();
     }
