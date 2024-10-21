@@ -7,6 +7,7 @@ import type { aqualightData } from "./interfaces/planning.ts";
 import type { entreePlanning } from "./interfaces/planning.ts";
 
 
+
 class Scheduler {
   private currentDay: number;
   private start: boolean = true;
@@ -20,8 +21,23 @@ class Scheduler {
     this.currentDay = today.getDay();
   }
 
+  async getAqualightDataHandler() {
+    // console.log("getAqualightData called");
+    const currentLightData: aqualightData = { day: "off", night: "off" };
+    try {
+      this.currentLightData = await getAquaLightData();
+    }
+    catch {
+      console.log("Fetch lightdata not ok");
+      this.currentLightData = currentLightData;
+      console.log(this.currentLightData);
+    }
+    
+  }
+
   async setAqualightData() {
-    this.currentLightData = await getAquaLightData();
+    await this.getAqualightDataHandler();
+
     // console.log('aqualightData', aqualightData);
     const now = new Date();
     if (now >= this.dayTime && now < this.nightTime) {
@@ -43,10 +59,10 @@ class Scheduler {
 
   }
 
-  async startScheduler(): Promise<void> {
+  async startScheduler() {
     console.log('Start Scheduler');
     console.log(`Current day: ${Dow[this.currentDay]}`);
-    this.currentLightData = await getAquaLightData();
+    await this.getAqualightDataHandler();
     await this.dayChangeHandler(this.currentDay);
   }
 
