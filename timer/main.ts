@@ -1,8 +1,7 @@
 import { Dow } from "./consts.ts";
 import "./config/db.ts";
 import { getPlanning } from "./controllers/plannings.ts";
-import { getAquaLightData, setAqualightData, setAqualightDay, setAqualightNight } from "./utils/utils.ts";
-import type { lights } from "./interfaces/planning.ts";
+import { getAquaLightData, setAqualightDay, setAqualightNight } from "./utils/utils.ts";
 import type { aqualightData } from "./interfaces/planning.ts";
 import type { entreePlanning } from "./interfaces/planning.ts";
 
