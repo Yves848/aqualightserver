@@ -3,7 +3,7 @@ import Planning from '../models/planning.ts';
 
 const getPlanning = async (day : number) : Promise<entreePlanning[]> => {
   try {
-    const planning = await Planning.find({joursemaine : day});
+    const planning = await Planning.find({joursemaine : day}).sort({heure: 1});
     return planning;
   } catch (error: unknown) {
     const { message } = error as Error;
