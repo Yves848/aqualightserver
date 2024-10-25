@@ -1,4 +1,5 @@
 import express, { NextFunction, Request, Response } from "npm:express@^4.18.2";
+import { config } from "https://deno.land/x/dotenv/mod.ts";
 import { Dow } from "./consts.ts";
 import "./config/db.ts";
 import { getPlanning } from "./controllers/plannings.ts";
@@ -115,9 +116,9 @@ class Scheduler {
 const scheduler = new Scheduler();
 scheduler.startScheduler();
 scheduler.watchDayChange();
-
+const env = config();
 const app = express();
-const port = Number(Deno.env.get("PORT")) || 3000;
+const port = Number(env.PORT) || 3000;
 
 const reqLogger = function (req : Request, _res : Response, next : NextFunction) {
   console.info(`${req.method} request to "${req.url}" by ${req.hostname}`);
