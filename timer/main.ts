@@ -1,3 +1,4 @@
+import express, { NextFunction, Request, Response } from "npm:express@^4.18.2";
 import { Dow } from "./consts.ts";
 import "./config/db.ts";
 import { getPlanning } from "./controllers/plannings.ts";
@@ -114,3 +115,28 @@ class Scheduler {
 const scheduler = new Scheduler();
 scheduler.startScheduler();
 scheduler.watchDayChange();
+
+const app = express();
+const port = Number(Deno.env.get("PORT")) || 3000;
+
+const reqLogger = function (req : Request, _res : Response, next : NextFunction) {
+  console.info(`${req.method} request to "${req.url}" by ${req.hostname}`);
+  next();
+};
+
+const router = express.Router();
+
+router.get('/',(_req: Request, res: Response) => {
+  console.log('Main route');
+  res.json("{}");
+})
+app.use(reqLogger);
+app.use(express.json());
+app.use(router);
+// app.use("/", user);
+// app.use("/sunrise",sunrise);
+// app.use("/logs",logs);
+
+app.listen(port, () => {
+  console.log(`Listening on ${port} ...`);
+});
