@@ -6,16 +6,30 @@ import { getPlanning } from "./controllers/plannings.ts";
 import { getAquaLightData, setAqualightDay, setAqualightNight } from "./utils/utils.ts";
 import type { aqualightData } from "./interfaces/planning.ts";
 import type { entreePlanning } from "./interfaces/planning.ts";
+import main from "./routes/main.ts";
 
 
-
-class Scheduler {
+export class Scheduler {
   private currentDay: number;
   private start: boolean = true;
   private dayTime: Date = new Date();
   private nightTime: Date = new Date();
   private timer: number = -1;
   private currentLightData: aqualightData = { day: "off", night: "off" };
+  private _manual: boolean = false;
+
+  get manual(): boolean {
+    return this._manual;
+  }
+
+  set manual(value: boolean) {
+    this._manual = value;
+    if (value) {
+      console.log('Set manual value');
+    } else {
+      console.log('Set auto mode');
+    }
+  }
 
   constructor() {
     const today = new Date();
@@ -24,7 +38,7 @@ class Scheduler {
 
   async getAqualightDataHandler() {
     // console.log("getAqualightData called");
-    const currentLightData =  this.currentLightData;
+    const currentLightData = this.currentLightData;
     try {
       this.currentLightData = await getAquaLightData();
     }
@@ -33,31 +47,34 @@ class Scheduler {
       this.currentLightData = currentLightData;
       console.log(this.currentLightData);
     }
-    
+
   }
 
   async setAqualightData() {
-    await this.getAqualightDataHandler();
+    if (!this.manual) {
+      await this.getAqualightDataHandler();
 
-    // console.log('aqualightData', aqualightData);
-    const now = new Date();
-    if (now >= this.dayTime && now < this.nightTime) {
-      if (this.currentLightData.day === "off") {
-        await setAqualightDay();
-        this.currentLightData.day = "on";
-        this.currentLightData.night = "off";
-        console.log('aqualightData', this.currentLightData);
-        
+      // console.log('aqualightData', aqualightData);
+      const now = new Date();
+      if (now >= this.dayTime && now < this.nightTime) {
+        if (this.currentLightData.day === "off") {
+          await setAqualightDay();
+          this.currentLightData.day = "on";
+          this.currentLightData.night = "off";
+          console.log('aqualightData', this.currentLightData);
+
+        }
+      } else {
+        if (this.currentLightData.night === "off") {
+          await setAqualightNight();
+          this.currentLightData.night = "on";
+          this.currentLightData.day = "off";
+          console.log('aqualightData', this.currentLightData);
+        }
       }
     } else {
-      if (this.currentLightData.night === "off") {
-        await setAqualightNight();
-        this.currentLightData.night = "on";
-        this.currentLightData.day = "off";
-        console.log('aqualightData', this.currentLightData);
-      }
+      console.log('timer in manual mode');
     }
-
   }
 
   async startScheduler() {
@@ -72,7 +89,7 @@ class Scheduler {
       console.log(`Day changed! ${Dow[day]} Reloading tasks...`);
       this.currentDay = day;
     }
-    const data : entreePlanning[] = await getPlanning(this.currentDay);
+    const data: entreePlanning[] = await getPlanning(this.currentDay);
     // console.log(data);
     if (data) {
       let temp = data[0].heure.split(':');
@@ -120,23 +137,17 @@ const env = config();
 const app = express();
 const port = Number(env.PORT) || 3000;
 
-const reqLogger = function (req : Request, _res : Response, next : NextFunction) {
+const reqLogger = function (req: Request, _res: Response, next: NextFunction) {
   console.info(`${req.method} request to "${req.url}" by ${req.hostname}`);
   next();
 };
 
-const router = express.Router();
 
-router.get('/',(_req: Request, res: Response) => {
-  console.log('Main route');
-  res.json("{}");
-})
+
 app.use(reqLogger);
 app.use(express.json());
-app.use(router);
-// app.use("/", user);
-// app.use("/sunrise",sunrise);
-// app.use("/logs",logs);
+app.use('/manual', main(scheduler, true));
+app.use('/auto', main(scheduler, false));
 
 app.listen(port, () => {
   console.log(`Listening on ${port} ...`);
